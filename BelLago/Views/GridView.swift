@@ -9,38 +9,76 @@ struct GridView: View {
     
     // MARK: - Constants
     
-    private let gridColumns = Array(repeating: GridItem(.fixed(8), spacing: 1), count: 40)
     private let gridRows = 20
+    private let gridCols = 40
     private let totalCells = 800
+    private let minCellSize: CGFloat = 4
+    private let maxCellSize: CGFloat = 12
     
     // MARK: - Body
     
     var body: some View {
         GeometryReader { geometry in
-            ScrollView([.horizontal, .vertical], showsIndicators: false) {
-                LazyVGrid(columns: gridColumns, spacing: 1) {
+            let availableSize = calculateAvailableSize(geometry: geometry)
+            let cellSize = calculateOptimalCellSize(availableSize: availableSize)
+            let spacing = max(0.5, cellSize * 0.1)
+            let gridColumns = Array(repeating: GridItem(.fixed(cellSize), spacing: spacing), count: gridCols)
+            
+            VStack {
+                LazyVGrid(columns: gridColumns, spacing: spacing) {
                     ForEach(0..<min(grid.count, totalCells), id: \.self) { index in
                         CellView(
                             cell: grid[index],
+                            cellSize: cellSize,
                             onTap: {
                                 onCellTap(grid[index].position)
                             }
                         )
                     }
                 }
-                .padding(8)
+                .frame(
+                    width: calculateGridWidth(cellSize: cellSize, spacing: spacing),
+                    height: calculateGridHeight(cellSize: cellSize, spacing: spacing)
+                )
+                .background(
+                    RoundedRectangle(cornerRadius: max(8, cellSize * 0.5))
+                        .fill(.ultraThinMaterial)
+                        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+                )
+                .clipped()
             }
-            .frame(
-                width: min(geometry.size.width, CGFloat(40 * 8 + 39 + 16)), // 40 cells * 8 width + 39 spacing + padding
-                height: min(geometry.size.height, CGFloat(20 * 8 + 19 + 16)) // 20 rows * 8 height + 19 spacing + padding
-            )
-            .background(
-                RoundedRectangle(cornerRadius: 12)
-                    .fill(.ultraThinMaterial)
-                    .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
-            )
-            .clipped()
+            .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func calculateAvailableSize(geometry: GeometryProxy) -> CGSize {
+        let padding: CGFloat = 40 // Total horizontal and vertical padding
+        let availableWidth = geometry.size.width - padding
+        let availableHeight = geometry.size.height - padding
+        
+        return CGSize(width: max(0, availableWidth), height: max(0, availableHeight))
+    }
+    
+    private func calculateOptimalCellSize(availableSize: CGSize) -> CGFloat {
+        // Calculate cell size based on available space
+        let cellSizeByWidth = availableSize.width / CGFloat(gridCols + gridCols - 1) // Include spacing
+        let cellSizeByHeight = availableSize.height / CGFloat(gridRows + gridRows - 1) // Include spacing
+        
+        // Use the smaller dimension to ensure grid fits
+        let optimalSize = min(cellSizeByWidth, cellSizeByHeight)
+        
+        // Clamp to min and max bounds
+        return max(minCellSize, min(maxCellSize, optimalSize))
+    }
+    
+    private func calculateGridWidth(cellSize: CGFloat, spacing: CGFloat) -> CGFloat {
+        return CGFloat(gridCols) * cellSize + CGFloat(gridCols - 1) * spacing
+    }
+    
+    private func calculateGridHeight(cellSize: CGFloat, spacing: CGFloat) -> CGFloat {
+        return CGFloat(gridRows) * cellSize + CGFloat(gridRows - 1) * spacing
     }
 }
 

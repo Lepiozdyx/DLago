@@ -1,5 +1,6 @@
 import Foundation
 
+@MainActor
 class GameViewModel: ObservableObject, Identifiable {
     
     // MARK: - Properties
@@ -33,12 +34,20 @@ class GameViewModel: ObservableObject, Identifiable {
     
     init(levelConfig: LevelConfig) {
         self.levelConfig = levelConfig
-        setupGrid()
+        setupEmptyGrid()
     }
     
     // MARK: - Public Methods
     
     func startLevel() {
+        gameState = .loading
+        attemptsRemaining = 10
+        selectedSequence.removeAll()
+        isSubmitEnabled = false
+        password = ""
+        distractors.removeAll()
+        placements.removeAll()
+        
         Task {
             await generateGameField()
             await MainActor.run {
@@ -49,14 +58,7 @@ class GameViewModel: ObservableObject, Identifiable {
     }
     
     func resetLevel() {
-        attemptsRemaining = 10
-        selectedSequence.removeAll()
-        isSubmitEnabled = false
-        gameState = .idle
-        password = ""
-        distractors.removeAll()
-        placements.removeAll()
-        setupGrid()
+        setupEmptyGrid()
         startLevel()
     }
     
@@ -139,48 +141,46 @@ class GameViewModel: ObservableObject, Identifiable {
     
     // MARK: - Private Methods
     
-    private func setupGrid() {
+    private func setupEmptyGrid() {
         grid = (0..<totalCells).map { index in
             let position = GridPosition.from(linearIndex: index)
-            return GridCell(row: position.row, col: position.col, char: "")
+            return GridCell(row: position.row, col: position.col, char: " ")
         }
     }
     
     private func generateGameField() async {
-        await withTaskGroup(of: Void.self) { group in
-            group.addTask {
-                await self.placeWordsOnGrid()
-                await self.fillTrashCharacters()
-            }
+        // Generate word placements in background
+        let fieldData = await Task.detached {
+            return await self.generateWordPlacements()
+        }.value
+        
+        // Update grid on main thread
+        await MainActor.run {
+            self.password = fieldData.password
+            self.distractors = fieldData.distractors
+            self.placements = fieldData.placements
+            self.updateGridWithPlacements()
+            self.fillRemainingCellsWithTrash()
         }
     }
     
-    private func placeWordsOnGrid() async {
-        let result = await Task.detached {
-            let shuffledPool = self.levelConfig.wordPool.shuffled()
-            let password = shuffledPool.first ?? ""
-            let distractors = Array(shuffledPool.dropFirst())
-            
-            let allWords = [password] + distractors
-            var placedWords: [String: [GridPosition]] = [:]
-            var occupiedPositions: Set<GridPosition> = []
-            
-            for word in allWords {
-                if let positions = self.findValidPlacement(for: word, avoiding: occupiedPositions) {
-                    placedWords[word] = positions
-                    occupiedPositions.formUnion(positions)
-                }
-            }
-            
-            return (password: password, distractors: distractors, placements: placedWords)
-        }.value
+    private func generateWordPlacements() -> (password: String, distractors: [String], placements: [String: [GridPosition]]) {
+        let shuffledPool = levelConfig.wordPool.shuffled()
+        let password = shuffledPool.first ?? ""
+        let distractors = Array(shuffledPool.dropFirst())
         
-        await MainActor.run {
-            self.password = result.password
-            self.distractors = result.distractors
-            self.placements = result.placements
-            self.updateGridWithPlacements()
+        let allWords = [password] + distractors
+        var placedWords: [String: [GridPosition]] = [:]
+        var occupiedPositions: Set<GridPosition> = []
+        
+        for word in allWords {
+            if let positions = findValidPlacement(for: word, avoiding: occupiedPositions) {
+                placedWords[word] = positions
+                occupiedPositions.formUnion(positions)
+            }
         }
+        
+        return (password: password, distractors: distractors, placements: placedWords)
     }
     
     private func findValidPlacement(for word: String, avoiding occupied: Set<GridPosition>) -> [GridPosition]? {
@@ -256,19 +256,17 @@ class GameViewModel: ObservableObject, Identifiable {
         }
     }
     
-    private func fillTrashCharacters() async {
-        await MainActor.run {
-            for index in 0..<grid.count {
-                if grid[index].char == "" {
-                    let randomChar = trashCharacters.randomElement() ?? "?"
-                    let position = GridPosition.from(linearIndex: index)
-                    grid[index] = GridCell(
-                        row: position.row,
-                        col: position.col,
-                        char: randomChar,
-                        isPartOfAnyWord: false
-                    )
-                }
+    private func fillRemainingCellsWithTrash() {
+        for index in 0..<grid.count {
+            if grid[index].char == " " {
+                let randomChar = trashCharacters.randomElement() ?? "?"
+                let position = GridPosition.from(linearIndex: index)
+                grid[index] = GridCell(
+                    row: position.row,
+                    col: position.col,
+                    char: randomChar,
+                    isPartOfAnyWord: false
+                )
             }
         }
     }

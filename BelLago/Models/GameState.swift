@@ -5,11 +5,11 @@
 //  Created by Alex on 15.08.2025.
 //
 
-
 import Foundation
 
 enum GameState: String, Codable, CaseIterable {
     case idle = "idle"
+    case loading = "loading"
     case playing = "playing"
     case paused = "paused"
     case won = "won"
@@ -22,7 +22,7 @@ enum GameState: String, Codable, CaseIterable {
         switch self {
         case .playing, .paused:
             return true
-        case .idle, .won, .lost, .evaluating:
+        case .idle, .loading, .won, .lost, .evaluating:
             return false
         }
     }
@@ -35,7 +35,20 @@ enum GameState: String, Codable, CaseIterable {
         switch self {
         case .paused, .won, .lost:
             return true
-        case .idle, .playing, .evaluating:
+        case .idle, .loading, .playing, .evaluating:
+            return false
+        }
+    }
+    
+    var showsLoadingIndicator: Bool {
+        self == .loading
+    }
+    
+    var isReadyToPlay: Bool {
+        switch self {
+        case .playing, .paused:
+            return true
+        case .idle, .loading, .won, .lost, .evaluating:
             return false
         }
     }

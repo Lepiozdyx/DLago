@@ -5,7 +5,6 @@
 //  Created by Alex on 15.08.2025.
 //
 
-
 import SwiftUI
 
 struct GameView: View {
@@ -42,11 +41,16 @@ struct GameView: View {
                 
                 // Game Content
                 ZStack {
-                    // Grid and Submit Button
-                    gameContent
-                    
-                    // Helper View (overlay on left side)
-                    helperOverlay
+                    if viewModel.gameState.showsLoadingIndicator {
+                        // Loading Indicator
+                        loadingView
+                    } else {
+                        // Grid and Submit Button
+                        gameContent
+                        
+                        // Helper View (overlay on left side)
+                        helperOverlay
+                    }
                 }
             }
             
@@ -54,7 +58,7 @@ struct GameView: View {
             if showPauseOverlay {
                 PauseOverlayView(
                     onResume: { showPauseOverlay = false },
-                    onRetry: { 
+                    onRetry: {
                         showPauseOverlay = false
                         viewModel.resetLevel()
                     },
@@ -69,7 +73,7 @@ struct GameView: View {
                 VictoryOverlayView(
                     levelConfig: levelConfig,
                     onMenu: { dismiss() },
-                    onNextLevel: { 
+                    onNextLevel: {
                         if levelConfig.id < 5 {
                             // Navigate to next level
                             dismiss()
@@ -89,7 +93,12 @@ struct GameView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
-            appState.startLevel(levelConfig.id, config: levelConfig)
+            // Start level when view appears
+            if viewModel.gameState == .idle {
+                viewModel.startLevel()
+            }
+            
+            // Show initial helper message if needed
             if appState.helperManager.currentMessage == nil {
                 appState.helperManager.showMessage(for: .levelStart)
             }
@@ -110,11 +119,16 @@ struct GameView: View {
     private var topBar: some View {
         HStack {
             // Pause Button
-            Button(action: { showPauseOverlay = true }) {
+            Button(action: {
+                if viewModel.gameState.canInteractWithGrid {
+                    showPauseOverlay = true
+                }
+            }) {
                 Image(systemName: "pause.circle.fill")
                     .font(.title2)
-                    .foregroundColor(.blue)
+                    .foregroundColor(viewModel.gameState.canInteractWithGrid ? .blue : .gray)
             }
+            .disabled(!viewModel.gameState.canInteractWithGrid)
             
             Spacer()
             
@@ -143,6 +157,26 @@ struct GameView: View {
         .background(.ultraThinMaterial)
     }
     
+    private var loadingView: some View {
+        VStack(spacing: 20) {
+            ProgressView()
+                .scaleEffect(1.5)
+                .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+            
+            Text("Generating puzzle...")
+                .font(.headline)
+                .foregroundColor(.secondary)
+            
+            Text("Placing words and filling grid")
+                .font(.subheadline)
+                .foregroundColor(.secondary)
+                .opacity(0.8)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
+        .padding(40)
+    }
+    
     private var gameContent: some View {
         VStack(spacing: 20) {
             // Grid View
@@ -153,6 +187,7 @@ struct GameView: View {
                 onCellTap: viewModel.selectCell
             )
             .disabled(!viewModel.gameState.canInteractWithGrid)
+            .opacity(viewModel.gameState.isReadyToPlay ? 1.0 : 0.5)
             
             Spacer()
             
