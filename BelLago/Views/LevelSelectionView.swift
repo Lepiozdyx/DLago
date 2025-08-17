@@ -1,11 +1,3 @@
-//
-//  LevelSelectionView.swift
-//  BelLago
-//
-//  Created by Alex on 15.08.2025.
-//
-
-
 import SwiftUI
 
 struct LevelSelectionView: View {
@@ -58,58 +50,48 @@ struct LevelSelectionView: View {
     // MARK: - Body
     
     var body: some View {
-        VStack(spacing: 30) {
-            // Title
-            titleSection
+        ZStack {
+            BackgroundView()
             
-            Spacer()
+            topBar
             
             // Level Buttons
             levelButtonsSection
-            
-            Spacer()
         }
-        .navigationTitle("Level Selection")
-        .navigationBarTitleDisplayMode(.large)
-        .background(
-            LinearGradient(
-                colors: [.blue.opacity(0.1), .purple.opacity(0.1)],
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-        )
+        .navigationBarBackButtonHidden(true)
     }
     
     // MARK: - Components
     
-    private var titleSection: some View {
-        VStack(spacing: 8) {
-            Text("Choose Your Challenge")
-                .font(.title2)
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
-            
-            Text("Each level increases word length")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
+    private var topBar: some View {
+        VStack {
+            HStack {
+                Button {
+                    dismiss()
+                } label: {
+                    Image(.back)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 50)
+                }
+
+                Spacer()
+            }
+            Spacer()
         }
-        .padding(.top, 20)
+        .padding()
     }
     
     private var levelButtonsSection: some View {
-        LazyVGrid(columns: gridColumns, spacing: 20) {
-            ForEach(levelConfigs) { config in
-                levelButton(for: config)
+        ZStack {
+            FrameView(title: .titleLevels, height: 280)
+            
+            HStack(spacing: 10) {
+                ForEach(levelConfigs) { config in
+                    levelButton(for: config)
+                }
             }
         }
-        .padding(.horizontal, 30)
-    }
-    
-    private var gridColumns: [GridItem] {
-        [
-            GridItem(.flexible(), spacing: 20),
-            GridItem(.flexible(), spacing: 20)
-        ]
     }
     
     private func levelButton(for config: LevelConfig) -> some View {
@@ -130,56 +112,26 @@ struct LevelSelectionView: View {
     }
     
     private func levelButtonContent(for config: LevelConfig, isUnlocked: Bool) -> some View {
-        VStack(spacing: 12) {
-            // Lock/Level Icon
-            Group {
-                if isUnlocked {
-                    Text("\(config.id)")
-                        .font(.largeTitle)
-                        .fontWeight(.bold)
-                } else {
-                    Image(systemName: "lock.fill")
-                        .font(.largeTitle)
-                }
+        Group {
+            if isUnlocked {
+                Text("\(config.id)")
+                    .cyberFont(40)
+            } else {
+                Image(.iconLock)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 40)
             }
-            .foregroundColor(isUnlocked ? .white : .gray)
-            
-            // Level Info
-            VStack(spacing: 4) {
-                Text(config.displayName)
-                    .font(.headline)
-                    .fontWeight(.semibold)
-                
-                Text("\(config.wordLength) letters")
-                    .font(.caption)
-                    .opacity(0.8)
-            }
-            .foregroundColor(isUnlocked ? .white : .gray)
         }
-        .frame(width: 120, height: 120)
+        .foregroundColor(isUnlocked ? .white : .gray)
+        .frame(width: 100, height: 120)
         .background(
-            RoundedRectangle(cornerRadius: 20)
-                .fill(
-                    isUnlocked ?
-                    LinearGradient(
-                        colors: [.blue, .purple],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    ) :
-                    LinearGradient(
-                        colors: [.gray.opacity(0.3), .gray.opacity(0.2)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
+            Image(.frame6)
+                .resizable()
+                .scaledToFit()
         )
-        .shadow(
-            color: isUnlocked ? .blue.opacity(0.3) : .clear,
-            radius: isUnlocked ? 8 : 0,
-            x: 0,
-            y: isUnlocked ? 4 : 0
-        )
-        .scaleEffect(isUnlocked ? 1.0 : 0.95)
+        .scaleEffect(isUnlocked ? 1.0 : 0.85)
+        .opacity(isUnlocked ? 1.0 : 0.8)
     }
 }
 
