@@ -12,8 +12,8 @@ struct GridView: View {
     private let gridRows = 20
     private let gridCols = 40
     private let totalCells = 800
-    private let minCellSize: CGFloat = 4
-    private let maxCellSize: CGFloat = 12
+    private let minCellSize: CGFloat = 14
+    private let maxCellSize: CGFloat = 24
     
     // MARK: - Body
     

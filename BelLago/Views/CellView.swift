@@ -97,6 +97,7 @@ extension CellView {
         HStack(spacing: 10) {
             Text("Small (6pt)")
                 .font(.caption2)
+            
             HStack(spacing: 5) {
                 CellView(
                     cell: GridCell(row: 0, col: 0, char: "A"),
@@ -119,6 +120,7 @@ extension CellView {
         HStack(spacing: 10) {
             Text("Medium (10pt)")
                 .font(.caption2)
+            
             HStack(spacing: 5) {
                 CellView(
                     cell: {
@@ -145,6 +147,7 @@ extension CellView {
         HStack(spacing: 10) {
             Text("Large (14pt)")
                 .font(.caption2)
+            
             HStack(spacing: 5) {
                 CellView(
                     cell: {
@@ -163,10 +166,6 @@ extension CellView {
                 )
             }
         }
-        
-        Text("Responsive cell sizes with different states")
-            .font(.caption)
-            .foregroundColor(.secondary)
     }
     .padding()
     .background(.gray.opacity(0.1))
