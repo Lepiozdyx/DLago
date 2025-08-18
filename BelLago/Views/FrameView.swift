@@ -3,6 +3,7 @@ import SwiftUI
 struct FrameView: View {
     let title: ImageResource
     let height: CGFloat
+    var frameName: ImageResource = .frame3
     
     var body: some View {
         VStack(spacing: -20) {
@@ -11,7 +12,7 @@ struct FrameView: View {
                 .scaledToFit()
                 .frame(maxHeight: 45)
                 .overlay {
-                    Image(.titleLevels)
+                    Image(title)
                         .resizable()
                         .scaledToFit()
                         .frame(height: 25)
@@ -19,7 +20,7 @@ struct FrameView: View {
                 }
                 .zIndex(1)
             
-            Image(.frame3)
+            Image(frameName)
                 .resizable()
                 .scaledToFit()
                 .frame(maxHeight: height)

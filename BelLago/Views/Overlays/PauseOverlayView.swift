@@ -1,11 +1,3 @@
-//
-//  PauseOverlayView.swift
-//  BelLago
-//
-//  Created by Alex on 15.08.2025.
-//
-
-
 import SwiftUI
 
 struct PauseOverlayView: View {
@@ -20,31 +12,21 @@ struct PauseOverlayView: View {
     
     var body: some View {
         ZStack {
-            // Semi-transparent background
-            Color.black.opacity(0.6)
-                .ignoresSafeArea()
+            LinearGradient(
+                colors: [.black, .black.opacity(0.8), .purple.opacity(0.3)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            FrameView(title: .titleLevels, height: 300, frameName: .frame5)
             
             // Content
-            VStack(spacing: 30) {
-                // Title
-                Text("Game Paused")
-                    .font(.largeTitle)
-                    .fontWeight(.bold)
-                    .foregroundColor(.white)
-                
-                // Buttons
-                VStack(spacing: 20) {
-                    resumeButton
-                    retryButton
-                    menuButton
-                }
+            VStack(spacing: 15) {
+                resumeButton
+                retryButton
+                menuButton
             }
-            .padding(40)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(.ultraThinMaterial)
-                    .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
-            )
         }
         .transition(.opacity.combined(with: .scale(scale: 0.8)))
         .animation(.easeInOut(duration: 0.3), value: true)
@@ -54,90 +36,86 @@ struct PauseOverlayView: View {
     
     private var resumeButton: some View {
         Button(action: onResume) {
-            HStack(spacing: 12) {
-                Image(systemName: "play.fill")
-                    .font(.title3)
+            HStack {
+                Image(.frame1)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60)
+                    .overlay {
+                        Image(.iconPlay)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30)
+                    }
+                    .offset(x: 30)
+                    .zIndex(1)
                 
-                Text("RESUME")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                Image(.frame2)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 200)
+                    .overlay {
+                        Text("Resume")
+                            .cyberFont(20)
+                    }
             }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(
-                LinearGradient(
-                    colors: [.green, .blue],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 25))
-            .shadow(color: .green.opacity(0.3), radius: 8, x: 0, y: 4)
         }
     }
     
     private var retryButton: some View {
         Button(action: onRetry) {
-            HStack(spacing: 12) {
-                Image(systemName: "arrow.clockwise")
-                    .font(.title3)
+            HStack {
+                Image(.frame1)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60)
+                    .overlay {
+                        Image(systemName: "arrow.circlepath")
+                            .font(.system(size: 30, weight: .bold))
+                            .foregroundStyle(.white.opacity(0.45))
+                    }
+                    .offset(x: 30)
+                    .zIndex(1)
                 
-                Text("RETRY")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                Image(.frame2)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 200)
+                    .overlay {
+                        Text("Retry")
+                            .cyberFont(20)
+                    }
             }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(
-                LinearGradient(
-                    colors: [.orange, .red],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 25))
-            .shadow(color: .orange.opacity(0.3), radius: 8, x: 0, y: 4)
         }
     }
     
     private var menuButton: some View {
         Button(action: onMenu) {
-            HStack(spacing: 12) {
-                Image(systemName: "house.fill")
-                    .font(.title3)
+            HStack {
+                Image(.back)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60)
+                    .offset(x: 30)
+                    .zIndex(1)
                 
-                Text("MENU")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                Image(.frame2)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 200)
+                    .overlay {
+                        Text("Menu")
+                            .cyberFont(20)
+                    }
             }
-            .foregroundColor(.primary)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(.ultraThinMaterial)
-//                    .stroke(.gray.opacity(0.3), lineWidth: 1)
-            )
         }
     }
 }
 
 #Preview {
-    ZStack {
-        // Mock game background
-        LinearGradient(
-            colors: [.blue.opacity(0.3), .purple.opacity(0.3)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .ignoresSafeArea()
-        
-        PauseOverlayView(
-            onResume: { print("Resume") },
-            onRetry: { print("Retry") },
-            onMenu: { print("Menu") }
-        )
-    }
+    PauseOverlayView(
+        onResume: { print("Resume") },
+        onRetry: { print("Retry") },
+        onMenu: { print("Menu") }
+    )
 }

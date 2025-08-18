@@ -27,47 +27,44 @@ struct VictoryOverlayView: View {
         levelConfig.id < 5
     }
     
-    private var congratulationMessage: String {
-        if levelConfig.id == 5 {
-            return "🎉 All Levels Complete! 🎉"
-        } else {
-            return "🎉 Level \(levelConfig.id) Complete! 🎉"
-        }
-    }
-    
     // MARK: - Body
     
     var body: some View {
         ZStack {
-            // Semi-transparent background
-            Color.black.opacity(0.6)
-                .ignoresSafeArea()
+            LinearGradient(
+                colors: [.black, .black.opacity(0.8), .purple.opacity(0.3)],
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+            .ignoresSafeArea()
+            
+            HStack {
+                Image(.robot3)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 250)
+                
+                Spacer()
+            }
+            
+            FrameView(title: .titleWin, height: 250, frameName: .frame5)
             
             // Confetti effect
             confettiOverlay
             
             // Content
-            VStack(spacing: 30) {
-                // Congratulations
-                congratulationsSection
-                
+            VStack(spacing: 25) {
                 // Reward info
                 rewardSection
                 
                 // Buttons
-                VStack(spacing: 20) {
+                VStack(spacing: 15) {
                     if hasNextLevel {
                         nextLevelButton
                     }
                     menuButton
                 }
             }
-            .padding(40)
-            .background(
-                RoundedRectangle(cornerRadius: 20)
-                    .fill(.ultraThinMaterial)
-                    .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
-            )
             .scaleEffect(animateScale ? 1.0 : 0.8)
         }
         .transition(.opacity.combined(with: .scale(scale: 0.8)))
@@ -84,84 +81,57 @@ struct VictoryOverlayView: View {
     
     // MARK: - Components
     
-    private var congratulationsSection: some View {
-        VStack(spacing: 16) {
-            Text(congratulationMessage)
-                .font(.title)
-                .fontWeight(.bold)
-                .foregroundColor(.primary)
-                .multilineTextAlignment(.center)
-            
-            Text("You found the hidden word!")
-                .font(.headline)
-                .foregroundColor(.secondary)
-                .multilineTextAlignment(.center)
-        }
-    }
-    
     private var rewardSection: some View {
-        HStack(spacing: 12) {
-            Image(systemName: "bitcoinsign.circle.fill")
-                .font(.title2)
-                .foregroundColor(.yellow)
-            
-            Text("+100 coins")
-                .font(.title3)
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
-        }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-        .background(
-            RoundedRectangle(cornerRadius: 16)
-                .fill(.yellow.opacity(0.1))
-//                .stroke(.yellow.opacity(0.3), lineWidth: 1)
-        )
+        ScoreboardView(coins: 100)
     }
     
     private var nextLevelButton: some View {
         Button(action: onNextLevel) {
-            HStack(spacing: 12) {
-                Image(systemName: "arrow.right.circle.fill")
-                    .font(.title3)
+            HStack {
+                Image(.frame1)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60)
+                    .overlay {
+                        Image(.iconPlay)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30)
+                    }
+                    .offset(x: 30)
+                    .zIndex(1)
                 
-                Text("NEXT LEVEL")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                Image(.frame2)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 200)
+                    .overlay {
+                        Text("Next level")
+                            .cyberFont(20)
+                    }
             }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(
-                LinearGradient(
-                    colors: [.green, .blue],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
-            )
-            .clipShape(RoundedRectangle(cornerRadius: 25))
-            .shadow(color: .green.opacity(0.4), radius: 10, x: 0, y: 5)
         }
     }
     
     private var menuButton: some View {
         Button(action: onMenu) {
-            HStack(spacing: 12) {
-                Image(systemName: "house.fill")
-                    .font(.title3)
+            HStack {
+                Image(.back)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60)
+                    .offset(x: 30)
+                    .zIndex(1)
                 
-                Text("MENU")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                Image(.frame2)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 200)
+                    .overlay {
+                        Text("Menu")
+                            .cyberFont(20)
+                    }
             }
-            .foregroundColor(.primary)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(.ultraThinMaterial)
-//                    .stroke(.gray.opacity(0.3), lineWidth: 1)
-            )
         }
     }
     
@@ -204,19 +174,9 @@ struct VictoryOverlayView: View {
         wordPool: ["WORD", "GAME", "PLAY", "FIND"]
     )
     
-    return ZStack {
-        // Mock game background
-        LinearGradient(
-            colors: [.blue.opacity(0.3), .purple.opacity(0.3)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .ignoresSafeArea()
-        
-        VictoryOverlayView(
-            levelConfig: config,
-            onMenu: { print("Menu") },
-            onNextLevel: { print("Next Level") }
-        )
-    }
+    VictoryOverlayView(
+        levelConfig: config,
+        onMenu: { print("Menu") },
+        onNextLevel: { print("Next Level") }
+    )
 }
