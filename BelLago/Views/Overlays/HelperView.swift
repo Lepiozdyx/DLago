@@ -1,11 +1,3 @@
-//
-//  HelperView.swift
-//  BelLago
-//
-//  Created by Alex on 15.08.2025.
-//
-
-
 import SwiftUI
 
 struct HelperView: View {
@@ -17,7 +9,7 @@ struct HelperView: View {
     // MARK: - Body
     
     var body: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: -40) {
             // Helper Image
             helperImage
             
@@ -26,7 +18,6 @@ struct HelperView: View {
                 messageBubble(message: message)
             }
         }
-        .frame(maxWidth: 200)
         .onTapGesture {
             helperManager.skip()
         }
@@ -39,72 +30,42 @@ struct HelperView: View {
             if let textureID = helperManager.currentTextureID {
                 Image(textureID)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
             } else {
-                Image(systemName: "person.circle.fill")
-                    .font(.system(size: 40))
-                    .foregroundColor(.blue)
+                Image(.robot2)
+                    .resizable()
+                    .scaledToFit()
             }
         }
-        .frame(width: 60, height: 60)
-        .background(
-            Circle()
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.1), radius: 4, x: 0, y: 2)
-        )
+        .frame(height: 180)
     }
     
     private func messageBubble(message: String) -> some View {
-        VStack(alignment: .leading, spacing: 8) {
+        VStack(spacing: 6) {
             Text(message)
-                .font(.caption)
-                .foregroundColor(.primary)
-                .multilineTextAlignment(.leading)
-                .lineLimit(nil)
+                .cyberFont(12)
             
             // Skip hint
             HStack {
                 Spacer()
                 Text("Tap to skip")
-                    .font(.caption2)
-                    .foregroundColor(.secondary)
-                    .opacity(0.7)
+                    .font(.system(size: 10))
+                    .foregroundColor(.green2)
             }
         }
-        .padding(12)
+        .padding()
         .background(
-            RoundedRectangle(cornerRadius: 12)
-                .fill(.ultraThinMaterial)
-                .shadow(color: .black.opacity(0.1), radius: 6, x: 0, y: 3)
+            Image(.frame3)
+                .resizable()
         )
-        .overlay(
-            // Speech bubble tail
-            Path { path in
-                path.move(to: CGPoint(x: 20, y: 0))
-                path.addLine(to: CGPoint(x: 30, y: -8))
-                path.addLine(to: CGPoint(x: 40, y: 0))
-            }
-            .fill(.ultraThinMaterial)
-            .frame(width: 20, height: 8)
-            .offset(y: -8),
-            alignment: .topLeading
-        )
+        .frame(maxWidth: 250)
     }
 }
 
 #Preview {
-    ZStack {
-        Color.gray.opacity(0.1)
-            .ignoresSafeArea()
-        
-        VStack {
-            HStack {
-                HelperView()
-                Spacer()
-            }
-            Spacer()
-        }
-        .padding()
+    HStack {
+        HelperView()
+        Spacer()
     }
     .onAppear {
         AppStateManager.shared.helperManager.showMessage(for: .levelStart)

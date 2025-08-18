@@ -40,12 +40,11 @@ struct GridView: View {
                     width: calculateGridWidth(cellSize: cellSize, spacing: spacing),
                     height: calculateGridHeight(cellSize: cellSize, spacing: spacing)
                 )
+                .padding(6)
                 .background(
-                    RoundedRectangle(cornerRadius: max(8, cellSize * 0.5))
-                        .fill(.ultraThinMaterial)
-                        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 4)
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(LinearGradient(colors: [.gray, .black, .black, .black], startPoint: .topLeading, endPoint: .bottomTrailing))
                 )
-                .clipped()
             }
             .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
@@ -98,5 +97,5 @@ struct GridView: View {
         onCellTap: { _ in }
     )
     .frame(maxWidth: .infinity, maxHeight: .infinity)
-    .background(.gray.opacity(0.1))
+    .background(BackgroundView())
 }

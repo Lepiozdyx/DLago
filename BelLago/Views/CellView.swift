@@ -14,26 +14,18 @@ struct CellView: View {
         max(4, cellSize * 0.6)
     }
     
-    private var cornerRadius: CGFloat {
-        max(1, cellSize * 0.1)
-    }
-    
-    private var strokeWidth: CGFloat {
-        max(0.3, cellSize * 0.05)
-    }
-    
     // MARK: - Body
     
     var body: some View {
         Button(action: onTap) {
             Text(cell.char)
-                .font(.system(size: fontSize, weight: .medium, design: .monospaced))
-                .foregroundColor(textColor)
+                .font(.system(size: fontSize, weight: .bold, design: .monospaced))
+                .foregroundColor(.green1)
                 .frame(width: cellSize, height: cellSize)
                 .background(backgroundColor)
                 .overlay(
-                    RoundedRectangle(cornerRadius: cornerRadius)
-                        .stroke(borderColor, lineWidth: strokeWidth)
+                    RoundedRectangle(cornerRadius: 1)
+                        .stroke(.green2, lineWidth: 2)
                 )
         }
         .disabled(cell.isDisabled)
@@ -46,37 +38,13 @@ struct CellView: View {
     
     private var backgroundColor: Color {
         if cell.isDisabled {
-            return .red.opacity(0.7)
+            return .red.opacity(0.8)
         } else if let isCorrect = cell.isCorrect {
-            return isCorrect ? .green.opacity(0.8) : .red.opacity(0.7)
+            return isCorrect ? .green.opacity(0.8) : .red.opacity(0.8)
         } else if cell.isSelected {
             return .blue.opacity(0.8)
         } else {
             return .gray.opacity(0.2)
-        }
-    }
-    
-    private var textColor: Color {
-        if cell.isDisabled {
-            return .white
-        } else if cell.isCorrect == true {
-            return .white
-        } else if cell.isCorrect == false {
-            return .white
-        } else if cell.isSelected {
-            return .white
-        } else {
-            return .primary
-        }
-    }
-    
-    private var borderColor: Color {
-        if cell.isSelected {
-            return .blue
-        } else if let isCorrect = cell.isCorrect {
-            return isCorrect ? .green : .red
-        } else {
-            return .gray.opacity(0.4)
         }
     }
 }
@@ -86,87 +54,27 @@ struct CellView: View {
 extension CellView {
     init(cell: GridCell, onTap: @escaping () -> Void) {
         self.cell = cell
-        self.cellSize = 8 // Default fallback size
+        self.cellSize = 8
         self.onTap = onTap
     }
 }
 
 #Preview {
-    VStack(spacing: 10) {
-        // Different cell sizes
-        HStack(spacing: 10) {
-            Text("Small (6pt)")
-                .font(.caption2)
-            
-            HStack(spacing: 5) {
-                CellView(
-                    cell: GridCell(row: 0, col: 0, char: "A"),
-                    cellSize: 6,
-                    onTap: {}
-                )
-                
-                CellView(
-                    cell: {
-                        var cell = GridCell(row: 0, col: 1, char: "B")
-                        cell.isSelected = true
-                        return cell
-                    }(),
-                    cellSize: 6,
-                    onTap: {}
-                )
-            }
-        }
+    HStack(spacing: 5) {
+        CellView(
+            cell: {
+                var cell = GridCell(row: 0, col: 4, char: "E")
+                cell.isDisabled = true
+                return cell
+            }(),
+            cellSize: 20,
+            onTap: {}
+        )
         
-        HStack(spacing: 10) {
-            Text("Medium (10pt)")
-                .font(.caption2)
-            
-            HStack(spacing: 5) {
-                CellView(
-                    cell: {
-                        var cell = GridCell(row: 0, col: 2, char: "C")
-                        cell.isCorrect = true
-                        return cell
-                    }(),
-                    cellSize: 10,
-                    onTap: {}
-                )
-                
-                CellView(
-                    cell: {
-                        var cell = GridCell(row: 0, col: 3, char: "D")
-                        cell.isCorrect = false
-                        return cell
-                    }(),
-                    cellSize: 10,
-                    onTap: {}
-                )
-            }
-        }
-        
-        HStack(spacing: 10) {
-            Text("Large (14pt)")
-                .font(.caption2)
-            
-            HStack(spacing: 5) {
-                CellView(
-                    cell: {
-                        var cell = GridCell(row: 0, col: 4, char: "E")
-                        cell.isDisabled = true
-                        return cell
-                    }(),
-                    cellSize: 14,
-                    onTap: {}
-                )
-                
-                CellView(
-                    cell: GridCell(row: 0, col: 5, char: "F"),
-                    cellSize: 14,
-                    onTap: {}
-                )
-            }
-        }
+        CellView(
+            cell: GridCell(row: 0, col: 5, char: "F"),
+            cellSize: 20,
+            onTap: {}
+        )
     }
-    .padding()
-    .background(.gray.opacity(0.1))
 }

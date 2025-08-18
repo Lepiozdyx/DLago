@@ -1,11 +1,3 @@
-//
-//  HelperManager.swift
-//  BelLago
-//
-//  Created by Alex on 15.08.2025.
-//
-
-
 import SwiftUI
 
 class HelperManager: ObservableObject {
@@ -19,11 +11,9 @@ class HelperManager: ObservableObject {
     // MARK: - Private Properties
     
     private let textures: [String] = [
-        "helper_texture_1",
-        "helper_texture_2", 
-        "helper_texture_3",
-        "helper_texture_4",
-        "helper_texture_5"
+        "robot1",
+        "robot2",
+        "robot3"
     ]
     
     private let messages: [HelperTrigger: [String]] = [
@@ -73,7 +63,7 @@ class HelperManager: ObservableObject {
     }
     
     func randomTexture() -> String {
-        textures.randomElement() ?? "helper_texture_1"
+        textures.randomElement() ?? "robot1"
     }
     
     func randomMessage(for trigger: HelperTrigger) -> String {

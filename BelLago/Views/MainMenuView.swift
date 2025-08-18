@@ -12,6 +12,14 @@ struct MainMenuView: View {
         NavigationStack {
             ZStack {
                 BackgroundView()
+                
+                HStack {
+                    Image(.robot2)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 250)
+                    Spacer()
+                }
  
                 VStack {
                     ScoreboardView(coins: appState.coins)

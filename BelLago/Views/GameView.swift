@@ -1,10 +1,3 @@
-//
-//  GameView.swift
-//  BelLago
-//
-//  Created by Alex on 15.08.2025.
-//
-
 import SwiftUI
 
 struct GameView: View {
@@ -31,25 +24,26 @@ struct GameView: View {
     
     var body: some View {
         ZStack {
-            // Background
-            backgroundGradient
+            BackgroundView()
             
-            // Main Content
-            VStack(spacing: 0) {
-                // Top Bar
-                topBar
-                
-                // Game Content
-                ZStack {
-                    if viewModel.gameState.showsLoadingIndicator {
-                        // Loading Indicator
-                        loadingView
-                    } else {
-                        // Grid and Submit Button
-                        gameContent
-                        
-                        // Helper View (overlay on left side)
-                        helperOverlay
+            // Game Content
+            ZStack {
+                if viewModel.gameState.showsLoadingIndicator {
+                    // Loading Indicator
+                    loadingView
+                } else {
+                    // Top Bar
+                    topBar
+                    
+                    // Grid and Submit Button
+                    gameContent
+                    
+                    // Helper View
+                    helperOverlay
+                    
+                    // Submit Button
+                    if viewModel.isSubmitEnabled {
+                        submitButton
                     }
                 }
             }
@@ -107,149 +101,100 @@ struct GameView: View {
     
     // MARK: - Components
     
-    private var backgroundGradient: some View {
-        LinearGradient(
-            colors: [.blue.opacity(0.1), .purple.opacity(0.1)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .ignoresSafeArea()
-    }
-    
     private var topBar: some View {
-        HStack {
-            // Pause Button
-            Button(action: {
-                if viewModel.gameState.canInteractWithGrid {
-                    showPauseOverlay = true
+        VStack {
+            HStack(alignment: .top) {
+                // Pause Button
+                Button {
+                    if viewModel.gameState.canInteractWithGrid {
+                        showPauseOverlay = true
+                    }
+                } label: {
+                    Image(.back)
+                        .resizable()
+                        .scaledToFit()
+                        .frame(height: 40)
                 }
-            }) {
-                Image(systemName: "pause.circle.fill")
-                    .font(.title2)
-                    .foregroundColor(viewModel.gameState.canInteractWithGrid ? .blue : .gray)
-            }
-            .disabled(!viewModel.gameState.canInteractWithGrid)
-            
-            Spacer()
-            
-            // Word Length Indicator
-            Text("Code: \(levelConfig.wordLength) letters")
-                .font(.headline)
-                .fontWeight(.semibold)
-                .foregroundColor(.primary)
-            
-            Spacer()
-            
-            // Attempts Counter
-            HStack(spacing: 4) {
-                Image(systemName: "heart.fill")
-                    .font(.caption)
-                    .foregroundColor(.red)
+                .disabled(!viewModel.gameState.canInteractWithGrid)
                 
-                Text("\(viewModel.attemptsRemaining)")
-                    .font(.headline)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
+                Spacer()
+                
+                // Word Length Indicator
+                Text("Code length: \(Array(repeating: "*", count: levelConfig.wordLength).joined(separator: " "))")
+                    .cyberFont(14)
+                
+                Spacer()
+                
+                // Attempts Counter
+                HStack(spacing: 4) {
+                    Text("tries: ")
+                        .cyberFont(14)
+                    
+                    Text("\(viewModel.attemptsRemaining)")
+                        .cyberFont(14)
+                }
             }
+            Spacer()
         }
-        .padding(.horizontal, 20)
-        .padding(.vertical, 12)
-        .background(.ultraThinMaterial)
+        .padding()
     }
     
     private var loadingView: some View {
         VStack(spacing: 20) {
             ProgressView()
                 .scaleEffect(1.5)
-                .progressViewStyle(CircularProgressViewStyle(tint: .blue))
+                .progressViewStyle(CircularProgressViewStyle(tint: .green1))
             
-            Text("Generating puzzle...")
-                .font(.headline)
-                .foregroundColor(.secondary)
-            
-            Text("Placing words and filling grid")
-                .font(.subheadline)
-                .foregroundColor(.secondary)
-                .opacity(0.8)
+            Text("Loading...")
+                .cyberFont(22)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: 20))
-        .padding(40)
+        .background(
+            Image(.frame3)
+                .resizable()
+                .scaledToFit()
+        )
+        .padding(80)
     }
     
     private var gameContent: some View {
-        VStack(spacing: 20) {
-            // Grid View
-            Spacer()
-            
-            GridView(
-                grid: viewModel.grid,
-                onCellTap: viewModel.selectCell
-            )
-            .disabled(!viewModel.gameState.canInteractWithGrid)
-            .opacity(viewModel.gameState.isReadyToPlay ? 1.0 : 0.5)
-            
-            Spacer()
-            
-            // Submit Button
-            submitButton
-        }
-        .padding(.horizontal, 20)
+        GridView(
+            grid: viewModel.grid,
+            onCellTap: viewModel.selectCell
+        )
+        .disabled(!viewModel.gameState.canInteractWithGrid)
+        .opacity(viewModel.gameState.isReadyToPlay ? 1.0 : 0.5)
+        .padding(.top, 40)
     }
     
     private var submitButton: some View {
-        Button(action: viewModel.submitSelection) {
-            HStack(spacing: 8) {
-                Image(systemName: "checkmark.circle.fill")
-                    .font(.title3)
-                
-                Text("SUBMIT")
-                    .font(.headline)
-                    .fontWeight(.bold)
+        VStack{
+            Spacer()
+            
+            Button(action: viewModel.submitSelection) {
+                Image(.frame2)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 50)
+                    .overlay {
+                        Text("Submit")
+                            .cyberFont(20)
+                    }
             }
-            .foregroundColor(.white)
-            .frame(maxWidth: .infinity)
-            .frame(height: 50)
-            .background(
-                RoundedRectangle(cornerRadius: 25)
-                    .fill(
-                        viewModel.isSubmitEnabled ?
-                        LinearGradient(
-                            colors: [.green, .blue],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        ) :
-                        LinearGradient(
-                            colors: [.gray.opacity(0.5), .gray.opacity(0.3)],
-                            startPoint: .leading,
-                            endPoint: .trailing
-                        )
-                    )
-            )
-            .shadow(
-                color: viewModel.isSubmitEnabled ? .green.opacity(0.3) : .clear,
-                radius: viewModel.isSubmitEnabled ? 6 : 0,
-                x: 0,
-                y: viewModel.isSubmitEnabled ? 3 : 0
-            )
+            .disabled(!viewModel.isSubmitEnabled)
+            .padding(.bottom)
+            .animation(.easeInOut(duration: 0.3), value: viewModel.isSubmitEnabled)
         }
-        .disabled(!viewModel.isSubmitEnabled)
-        .padding(.bottom, 30)
-        .animation(.easeInOut(duration: 0.2), value: viewModel.isSubmitEnabled)
     }
     
     private var helperOverlay: some View {
-        VStack {
-            HStack {
-                if appState.helperManager.isVisible {
-                    HelperView()
-                        .transition(.asymmetric(
-                            insertion: .move(edge: .leading).combined(with: .opacity),
-                            removal: .move(edge: .leading).combined(with: .opacity)
-                        ))
-                }
-                
-                Spacer()
+        HStack {
+            if appState.helperManager.isVisible {
+                HelperView()
+                    .transition(.asymmetric(
+                        insertion: .move(edge: .leading).combined(with: .opacity),
+                        removal: .move(edge: .leading).combined(with: .opacity)
+                    ))
             }
             
             Spacer()
