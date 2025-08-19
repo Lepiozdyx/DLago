@@ -21,19 +21,20 @@ struct MainMenuView: View {
                     
                     Spacer()
                     
-                    VStack(spacing: 15) {
+                    VStack(spacing: 10) {
                         settingsButton
                         dailyTaskButton
                         achievementsButton
                         shopButton
                     }
-                    .padding()
+                    .padding(.trailing)
                 }
  
                 VStack {
                     ScoreboardView(coins: appState.coins)
                     Spacer()
                     logo
+                    Spacer()
                     Spacer()
                     playButton
                     Spacer()
@@ -91,7 +92,7 @@ struct MainMenuView: View {
                 Image(.frame1)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 60)
+                    .frame(width: 70)
                     .overlay {
                         Image(.iconTrophy)
                             .resizable()
@@ -108,7 +109,7 @@ struct MainMenuView: View {
                 Image(.frame1)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 60)
+                    .frame(width: 70)
                     .overlay {
                         Image(.iconGear)
                             .resizable()
@@ -120,12 +121,12 @@ struct MainMenuView: View {
     }
     
     private var shopButton: some View {
-        NavigationLink(destination: AchievementsView()) {
+        NavigationLink(destination: ShopView()) {
             HStack {
                 Image(.frame1)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 60)
+                    .frame(width: 70)
                     .overlay {
                         Image(.iconCart)
                             .resizable()
@@ -142,7 +143,7 @@ struct MainMenuView: View {
                 Image(.frame1)
                     .resizable()
                     .scaledToFit()
-                    .frame(width: 60)
+                    .frame(width: 70)
                     .overlay {
                         Image(.iconCubes)
                             .resizable()

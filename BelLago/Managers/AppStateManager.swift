@@ -17,6 +17,7 @@ class AppStateManager: ObservableObject {
     let soundManager: SoundManager
     let helperManager: HelperManager
     let achievementManager: AchievementManager
+    let backgroundManager: BackgroundManager
     
     // MARK: - Private Properties
     
@@ -29,6 +30,7 @@ class AppStateManager: ObservableObject {
         self.soundManager = SoundManager()
         self.helperManager = HelperManager()
         self.achievementManager = AchievementManager(dataManager: self.dataManager)
+        self.backgroundManager = BackgroundManager(dataManager: self.dataManager)
         
         loadAppState()
         
@@ -84,6 +86,35 @@ class AppStateManager: ObservableObject {
         }
     }
     
+    // MARK: - Background Methods
+    
+    func getCurrentBackgroundImageName() -> String {
+        return backgroundManager.activeBackgroundImageName
+    }
+    
+    func purchaseBackground(_ backgroundType: BackgroundType) -> Bool {
+        let price = backgroundManager.getBackgroundPrice(backgroundType)
+        
+        if backgroundManager.purchaseBackground(backgroundType, with: coins) {
+            addCoins(-price)
+            return true
+        }
+        
+        return false
+    }
+    
+    func setActiveBackground(_ backgroundType: BackgroundType) {
+        backgroundManager.setActiveBackground(backgroundType)
+        // Force UI update by triggering objectWillChange
+        objectWillChange.send()
+    }
+    
+    func canAffordBackground(_ backgroundType: BackgroundType) -> Bool {
+        return backgroundManager.canPurchase(backgroundType, with: coins)
+    }
+    
+    // MARK: - Save/Load Methods
+    
     func saveAppState() {
         let progress = SavedProgress(
             unlockedLevels: Array(unlockedLevels),
@@ -115,6 +146,7 @@ class AppStateManager: ObservableObject {
     func clearAllProgress() {
         dataManager.clearProgress()
         achievementManager.clearAllData()
+        backgroundManager.clearAllData()
         coins = 0
         unlockedLevels = [1]
         saveAppState()
