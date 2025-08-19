@@ -1,11 +1,3 @@
-//
-//  GridPosition.swift
-//  BelLago
-//
-//  Created by Alex on 15.08.2025.
-//
-
-
 import Foundation
 
 struct GridPosition: Codable, Hashable {
