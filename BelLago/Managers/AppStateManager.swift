@@ -18,6 +18,7 @@ class AppStateManager: ObservableObject {
     let helperManager: HelperManager
     let achievementManager: AchievementManager
     let backgroundManager: BackgroundManager
+    let dailyTaskManager: DailyTaskManager
     
     // MARK: - Private Properties
     
@@ -31,6 +32,7 @@ class AppStateManager: ObservableObject {
         self.helperManager = HelperManager()
         self.achievementManager = AchievementManager(dataManager: self.dataManager)
         self.backgroundManager = BackgroundManager(dataManager: self.dataManager)
+        self.dailyTaskManager = DailyTaskManager(dataManager: self.dataManager)
         
         loadAppState()
         
@@ -86,6 +88,35 @@ class AppStateManager: ObservableObject {
         }
     }
     
+    // MARK: - Daily Task Methods
+    
+    func recordGameStarted() {
+        dailyTaskManager.recordGameStarted()
+    }
+    
+    func recordShopVisited() {
+        dailyTaskManager.recordShopVisited()
+    }
+    
+    func recordPurchaseMade() {
+        dailyTaskManager.recordPurchaseMade()
+        
+        // Check if all backgrounds are purchased after each purchase
+        let totalBackgrounds = backgroundManager.backgrounds.count
+        let purchasedBackgrounds = backgroundManager.backgrounds.filter { $0.isPurchased }.count
+        dailyTaskManager.checkAllBackgroundsPurchased(
+            totalBackgrounds: totalBackgrounds,
+            purchasedBackgrounds: purchasedBackgrounds
+        )
+    }
+    
+    func claimDailyTask(_ taskType: DailyTaskType) {
+        let reward = dailyTaskManager.claimTask(taskType)
+        if reward > 0 {
+            addCoins(reward)
+        }
+    }
+    
     // MARK: - Background Methods
     
     func getCurrentBackgroundImageName() -> String {
@@ -97,6 +128,10 @@ class AppStateManager: ObservableObject {
         
         if backgroundManager.purchaseBackground(backgroundType, with: coins) {
             addCoins(-price)
+            
+            // Record purchase for daily tasks
+            recordPurchaseMade()
+            
             return true
         }
         
@@ -147,6 +182,7 @@ class AppStateManager: ObservableObject {
         dataManager.clearProgress()
         achievementManager.clearAllData()
         backgroundManager.clearAllData()
+        dailyTaskManager.clearAllData()
         coins = 0
         unlockedLevels = [1]
         saveAppState()

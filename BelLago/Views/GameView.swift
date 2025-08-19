@@ -87,6 +87,9 @@ struct GameView: View {
         }
         .navigationBarHidden(true)
         .onAppear {
+            // Record game started for daily tasks
+            appState.recordGameStarted()
+            
             // Start level when view appears
             if viewModel.gameState == .idle {
                 viewModel.startLevel()

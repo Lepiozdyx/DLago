@@ -86,23 +86,6 @@ struct MainMenuView: View {
         }
     }
     
-    private var achievementsButton: some View {
-        NavigationLink(destination: AchievementsView()) {
-            HStack {
-                Image(.frame1)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 70)
-                    .overlay {
-                        Image(.iconTrophy)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 30)
-                    }
-            }
-        }
-    }
-    
     private var settingsButton: some View {
         NavigationLink(destination: AchievementsView()) {
             HStack {
@@ -112,6 +95,40 @@ struct MainMenuView: View {
                     .frame(width: 70)
                     .overlay {
                         Image(.iconGear)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30)
+                    }
+            }
+        }
+    }
+    
+    private var dailyTaskButton: some View {
+        NavigationLink(destination: DailyTaskView()) {
+            HStack {
+                Image(.frame1)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 70)
+                    .overlay {
+                        Image(.iconCubes)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30)
+                    }
+            }
+        }
+    }
+    
+    private var achievementsButton: some View {
+        NavigationLink(destination: AchievementsView()) {
+            HStack {
+                Image(.frame1)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 70)
+                    .overlay {
+                        Image(.iconTrophy)
                             .resizable()
                             .scaledToFit()
                             .frame(width: 30)
@@ -137,22 +154,6 @@ struct MainMenuView: View {
         }
     }
     
-    private var dailyTaskButton: some View {
-        NavigationLink(destination: AchievementsView()) {
-            HStack {
-                Image(.frame1)
-                    .resizable()
-                    .scaledToFit()
-                    .frame(width: 70)
-                    .overlay {
-                        Image(.iconCubes)
-                            .resizable()
-                            .scaledToFit()
-                            .frame(width: 30)
-                    }
-            }
-        }
-    }
 }
 
 #Preview {

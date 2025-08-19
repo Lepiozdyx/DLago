@@ -30,6 +30,9 @@ struct ShopView: View {
         }
         .navigationBarBackButtonHidden(true)
         .onAppear {
+            // Record shop visited for daily tasks
+            appState.recordShopVisited()
+            
             // Ensure background manager is properly initialized
             appState.backgroundManager.updateBackgroundStates()
         }
