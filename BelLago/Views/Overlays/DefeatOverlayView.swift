@@ -80,6 +80,7 @@ struct DefeatOverlayView: View {
                     }
             }
         }
+        .playTap()
     }
     
     private var menuButton: some View {
@@ -102,6 +103,7 @@ struct DefeatOverlayView: View {
                     }
             }
         }
+        .playTap()
     }
 }
 

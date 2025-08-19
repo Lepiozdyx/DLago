@@ -51,7 +51,9 @@ struct GameView: View {
             // Overlays
             if showPauseOverlay {
                 PauseOverlayView(
-                    onResume: { showPauseOverlay = false },
+                    onResume: {
+                        showPauseOverlay = false
+                    },
                     onRetry: {
                         showPauseOverlay = false
                         viewModel.resetLevel()
@@ -114,6 +116,7 @@ struct GameView: View {
                         .frame(height: 40)
                 }
                 .disabled(!viewModel.gameState.canInteractWithGrid)
+                .playTap()
                 
                 Spacer()
                 
@@ -158,7 +161,11 @@ struct GameView: View {
     private var gameContent: some View {
         GridView(
             grid: viewModel.grid,
-            onCellTap: viewModel.selectCell
+            onCellTap: { position in
+                // Play tap sound for cell selection
+                appState.soundManager.playTap()
+                viewModel.selectCell(at: position)
+            }
         )
         .disabled(!viewModel.gameState.canInteractWithGrid)
         .opacity(viewModel.gameState.isReadyToPlay ? 1.0 : 0.5)
@@ -170,9 +177,7 @@ struct GameView: View {
             Spacer()
             
             Button {
-                // Record submit for achievements
-                appState.recordSubmit()
-                viewModel.submitSelection()
+                handleSubmitAction()
             } label: {
                 Image(.frame2)
                     .resizable()
@@ -195,6 +200,26 @@ struct GameView: View {
             Spacer()
         }
         .animation(.easeInOut(duration: 0.4), value: appState.helperManager.isVisible)
+    }
+    
+    // MARK: - Methods
+    
+    private func handleSubmitAction() {
+        // Record submit for achievements
+        appState.recordSubmit()
+        
+        // Check if the current selection is correct before submission
+        let result = viewModel.evaluateSelection(viewModel.selectedSequence)
+        
+        // Play appropriate sound based on result
+        if result.isCorrect {
+            appState.soundManager.playSuccess()
+        } else {
+            appState.soundManager.playFail()
+        }
+        
+        // Submit the selection
+        viewModel.submitSelection()
     }
 }
 

@@ -120,6 +120,7 @@ struct AchievementCardView: View {
         .disabled(!achievement.canClaim)
         .opacity(achievement.canClaim ? 1.0 : 0.7)
         .animation(.easeInOut(duration: 0.3), value: achievement.canClaim)
+        .playTap()
     }
     
     // MARK: - Helper Methods

@@ -74,6 +74,7 @@ struct LevelSelectionView: View {
                         .scaledToFit()
                         .frame(height: 50)
                 }
+                .playTap()
 
                 Spacer()
             }

@@ -10,3 +10,35 @@ extension Text {
             .textCase(.uppercase)
     }
 }
+
+extension View {
+    
+    // MARK: - Sound Effects
+    
+    /// Adds tap sound effect to any view when tapped
+    func playTap() -> some View {
+        self.simultaneousGesture(
+            TapGesture().onEnded {
+                AppStateManager.shared.soundManager.playTap()
+            }
+        )
+    }
+    
+    /// Adds success sound effect to any view when tapped
+    func playSuccess() -> some View {
+        self.simultaneousGesture(
+            TapGesture().onEnded {
+                AppStateManager.shared.soundManager.playSuccess()
+            }
+        )
+    }
+    
+    /// Adds fail sound effect to any view when tapped
+    func playFail() -> some View {
+        self.simultaneousGesture(
+            TapGesture().onEnded {
+                AppStateManager.shared.soundManager.playFail()
+            }
+        )
+    }
+}

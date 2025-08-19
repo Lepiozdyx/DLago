@@ -46,6 +46,7 @@ struct AchievementsView: View {
                         .scaledToFit()
                         .frame(height: 50)
                 }
+                .playTap()
                 
                 Spacer()
                 

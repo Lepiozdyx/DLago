@@ -103,6 +103,7 @@ struct VictoryOverlayView: View {
                     }
             }
         }
+        .playTap()
     }
     
     private var menuButton: some View {
@@ -125,6 +126,7 @@ struct VictoryOverlayView: View {
                     }
             }
         }
+        .playTap()
     }
     
     private var confettiOverlay: some View {

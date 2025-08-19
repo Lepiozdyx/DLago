@@ -5,6 +5,7 @@ struct MainMenuView: View {
     // MARK: - Properties
     
     @StateObject private var appState = AppStateManager.shared
+    @Environment(\.scenePhase) private var scenePhase
     
     // MARK: - Body
     
@@ -40,6 +41,23 @@ struct MainMenuView: View {
                     Spacer()
                 }
                 .padding()
+            }
+        }
+        .onAppear {
+            if appState.soundManager.isMusicEnabled {
+                appState.soundManager.playMusic()
+            }
+        }
+        .onChange(of: scenePhase) { phase in
+            switch phase {
+            case .active:
+                if appState.soundManager.isMusicEnabled {
+                    appState.soundManager.playMusic()
+                }
+            case .background, .inactive:
+                appState.soundManager.stopMusic()
+            @unknown default:
+                break
             }
         }
     }
@@ -84,10 +102,11 @@ struct MainMenuView: View {
                     }
             }
         }
+        .playTap()
     }
     
     private var settingsButton: some View {
-        NavigationLink(destination: AchievementsView()) {
+        NavigationLink(destination: SettingsView()) {
             HStack {
                 Image(.frame1)
                     .resizable()
@@ -101,6 +120,7 @@ struct MainMenuView: View {
                     }
             }
         }
+        .playTap()
     }
     
     private var dailyTaskButton: some View {
@@ -118,6 +138,7 @@ struct MainMenuView: View {
                     }
             }
         }
+        .playTap()
     }
     
     private var achievementsButton: some View {
@@ -135,6 +156,7 @@ struct MainMenuView: View {
                     }
             }
         }
+        .playTap()
     }
     
     private var shopButton: some View {
@@ -152,6 +174,7 @@ struct MainMenuView: View {
                     }
             }
         }
+        .playTap()
     }
     
 }

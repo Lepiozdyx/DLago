@@ -120,6 +120,7 @@ struct DailyTaskCardView: View {
         .disabled(!dailyTask.canClaim)
         .opacity(dailyTask.canClaim ? 1.0 : 0.7)
         .animation(.easeInOut(duration: 0.3), value: dailyTask.canClaim)
+        .playTap()
     }
     
     // MARK: - Helper Methods

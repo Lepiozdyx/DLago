@@ -60,6 +60,7 @@ struct PauseOverlayView: View {
                     }
             }
         }
+        .playTap()
     }
     
     private var retryButton: some View {
@@ -87,6 +88,7 @@ struct PauseOverlayView: View {
                     }
             }
         }
+        .playTap()
     }
     
     private var menuButton: some View {
@@ -109,6 +111,7 @@ struct PauseOverlayView: View {
                     }
             }
         }
+        .playTap()
     }
 }
 
