@@ -166,7 +166,11 @@ struct GameView: View {
         VStack{
             Spacer()
             
-            Button(action: viewModel.submitSelection) {
+            Button {
+                // Record submit for achievements
+                appState.recordSubmit()
+                viewModel.submitSelection()
+            } label: {
                 Image(.frame2)
                     .resizable()
                     .scaledToFit()

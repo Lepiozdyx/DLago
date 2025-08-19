@@ -1,10 +1,3 @@
-//
-//  AppStateManager.swift
-//  BelLago
-//
-//  Created by Alex on 15.08.2025.
-//
-
 import Foundation
 
 class AppStateManager: ObservableObject {
@@ -23,6 +16,7 @@ class AppStateManager: ObservableObject {
     let dataManager: DataManager
     let soundManager: SoundManager
     let helperManager: HelperManager
+    let achievementManager: AchievementManager
     
     // MARK: - Private Properties
     
@@ -34,8 +28,12 @@ class AppStateManager: ObservableObject {
         self.dataManager = DataManager()
         self.soundManager = SoundManager()
         self.helperManager = HelperManager()
+        self.achievementManager = AchievementManager(dataManager: self.dataManager)
         
         loadAppState()
+        
+        // Sync unlocked levels with achievement progress
+        achievementManager.progress.unlockedLevels = unlockedLevels
     }
     
     // MARK: - Public Methods
@@ -44,6 +42,7 @@ class AppStateManager: ObservableObject {
         guard level > 0 && level <= 5 else { return }
         
         unlockedLevels.insert(level)
+        achievementManager.recordLevelUnlock(level)
         saveAppState()
     }
     
@@ -56,8 +55,11 @@ class AppStateManager: ObservableObject {
         unlockedLevels.contains(level)
     }
     
-    func completeLevel(_ level: Int) {
+    func completeLevel(_ level: Int, attemptsRemaining: Int = 0) {
         addCoins(coinRewardPerLevel)
+        
+        let attemptsUsed = 10 - attemptsRemaining
+        achievementManager.recordLevelCompletion(level, attemptsUsed: attemptsUsed)
         
         let nextLevel = level + 1
         if nextLevel <= 5 {
@@ -65,6 +67,21 @@ class AppStateManager: ObservableObject {
         }
         
         saveAppState()
+    }
+    
+    func recordSubmit() {
+        achievementManager.recordSubmit()
+    }
+    
+    func recordGameOver() {
+        achievementManager.recordGameOver()
+    }
+    
+    func claimAchievement(_ achievementType: AchievementType) {
+        let reward = achievementManager.claimAchievement(achievementType)
+        if reward > 0 {
+            addCoins(reward)
+        }
     }
     
     func saveAppState() {
@@ -90,10 +107,14 @@ class AppStateManager: ObservableObject {
         
         // Ensure level 1 is always unlocked
         unlockedLevels.insert(1)
+        
+        // Sync with achievement manager
+        achievementManager.progress.unlockedLevels = unlockedLevels
     }
     
     func clearAllProgress() {
         dataManager.clearProgress()
+        achievementManager.clearAllData()
         coins = 0
         unlockedLevels = [1]
         saveAppState()

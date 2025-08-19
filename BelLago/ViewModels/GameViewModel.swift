@@ -131,12 +131,13 @@ class GameViewModel: ObservableObject, Identifiable {
     func handleVictory() {
         gameState = .won
         showHelperMessage(for: .victory)
-        AppStateManager.shared.completeLevel(levelConfig.id)
+        AppStateManager.shared.completeLevel(levelConfig.id, attemptsRemaining: attemptsRemaining)
     }
     
     func handleDefeat() {
         gameState = .lost
         showHelperMessage(for: .defeat)
+        AppStateManager.shared.recordGameOver()
     }
     
     // MARK: - Private Methods

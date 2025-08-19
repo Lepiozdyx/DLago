@@ -18,7 +18,16 @@ struct MainMenuView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(width: 250)
+                    
                     Spacer()
+                    
+                    VStack(spacing: 15) {
+                        settingsButton
+                        dailyTaskButton
+                        achievementsButton
+                        shopButton
+                    }
+                    .padding()
                 }
  
                 VStack {
@@ -71,6 +80,74 @@ struct MainMenuView: View {
                     .overlay {
                         Text("Play")
                             .cyberFont(20)
+                    }
+            }
+        }
+    }
+    
+    private var achievementsButton: some View {
+        NavigationLink(destination: AchievementsView()) {
+            HStack {
+                Image(.frame1)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60)
+                    .overlay {
+                        Image(.iconTrophy)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30)
+                    }
+            }
+        }
+    }
+    
+    private var settingsButton: some View {
+        NavigationLink(destination: AchievementsView()) {
+            HStack {
+                Image(.frame1)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60)
+                    .overlay {
+                        Image(.iconGear)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30)
+                    }
+            }
+        }
+    }
+    
+    private var shopButton: some View {
+        NavigationLink(destination: AchievementsView()) {
+            HStack {
+                Image(.frame1)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60)
+                    .overlay {
+                        Image(.iconCart)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30)
+                    }
+            }
+        }
+    }
+    
+    private var dailyTaskButton: some View {
+        NavigationLink(destination: AchievementsView()) {
+            HStack {
+                Image(.frame1)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 60)
+                    .overlay {
+                        Image(.iconCubes)
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 30)
                     }
             }
         }
