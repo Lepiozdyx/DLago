@@ -91,11 +91,6 @@ struct GameView: View {
             if viewModel.gameState == .idle {
                 viewModel.startLevel()
             }
-            
-            // Show initial helper message if needed
-            if appState.helperManager.currentMessage == nil {
-                appState.helperManager.showMessage(for: .levelStart)
-            }
         }
     }
     
@@ -189,14 +184,7 @@ struct GameView: View {
     
     private var helperOverlay: some View {
         HStack {
-            if appState.helperManager.isVisible {
-                HelperView()
-                    .transition(.asymmetric(
-                        insertion: .move(edge: .leading).combined(with: .opacity),
-                        removal: .move(edge: .leading).combined(with: .opacity)
-                    ))
-            }
-            
+            HelperView()
             Spacer()
         }
         .animation(.easeInOut(duration: 0.4), value: appState.helperManager.isVisible)

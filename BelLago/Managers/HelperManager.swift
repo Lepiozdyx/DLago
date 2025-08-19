@@ -53,13 +53,14 @@ class HelperManager: ObservableObject {
     func showMessage(for trigger: HelperTrigger) {
         currentTextureID = randomTexture()
         currentMessage = randomMessage(for: trigger)
-        isVisible = true
+        
+        withAnimation(.easeIn(duration: 0.3)) {
+            isVisible = true
+        }
     }
     
     func skip() {
-        isVisible = false
-        currentMessage = nil
-        currentTextureID = nil
+        hideHelper()
     }
     
     func randomTexture() -> String {
@@ -80,5 +81,11 @@ class HelperManager: ObservableObject {
             self.currentMessage = nil
             self.currentTextureID = nil
         }
+    }
+    
+    func hideHelperImmediately() {
+        isVisible = false
+        currentMessage = nil
+        currentTextureID = nil
     }
 }

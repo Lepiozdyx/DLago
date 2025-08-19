@@ -9,35 +9,34 @@ struct HelperView: View {
     // MARK: - Body
     
     var body: some View {
-        VStack(alignment: .leading, spacing: -40) {
-            // Helper Image
-            helperImage
+        // Only show the helper when there's both a message and texture
+        if let message = helperManager.currentMessage,
+           let textureID = helperManager.currentTextureID {
             
-            // Message Bubble
-            if let message = helperManager.currentMessage {
+            VStack(alignment: .leading, spacing: -40) {
+                // Helper Image
+                helperImage(textureID: textureID)
+                
+                // Message Bubble
                 messageBubble(message: message)
             }
-        }
-        .onTapGesture {
-            helperManager.skip()
+            .onTapGesture {
+                helperManager.skip()
+            }
+            .transition(.asymmetric(
+                insertion: .move(edge: .leading).combined(with: .opacity),
+                removal: .move(edge: .leading).combined(with: .opacity)
+            ))
         }
     }
     
     // MARK: - Components
     
-    private var helperImage: some View {
-        Group {
-            if let textureID = helperManager.currentTextureID {
-                Image(textureID)
-                    .resizable()
-                    .scaledToFit()
-            } else {
-                Image(.robot2)
-                    .resizable()
-                    .scaledToFit()
-            }
-        }
-        .frame(height: 180)
+    private func helperImage(textureID: String) -> some View {
+        Image(textureID)
+            .resizable()
+            .scaledToFit()
+            .frame(height: 180)
     }
     
     private func messageBubble(message: String) -> some View {
