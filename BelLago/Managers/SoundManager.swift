@@ -5,26 +5,8 @@ class SoundManager: ObservableObject {
     
     // MARK: - Properties
     
-    @Published var isSoundEnabled: Bool {
-        didSet {
-            UserDefaults.standard.set(isSoundEnabled, forKey: soundKey)
-            if !isSoundEnabled {
-                stopMusic()
-                isMusicEnabled = false
-            }
-        }
-    }
-    
-    @Published var isMusicEnabled: Bool {
-        didSet {
-            UserDefaults.standard.set(isMusicEnabled, forKey: musicKey)
-            if isMusicEnabled && isSoundEnabled {
-                playMusic()
-            } else {
-                stopMusic()
-            }
-        }
-    }
+    @Published var isSoundEnabled: Bool = true
+    @Published var isMusicEnabled: Bool = true
     
     private var audioPlayers: [String: AVAudioPlayer] = [:]
     private var musicPlayer: AVAudioPlayer?
@@ -54,9 +36,7 @@ class SoundManager: ObservableObject {
     // MARK: - Initialization
     
     init() {
-        self.isSoundEnabled = UserDefaults.standard.object(forKey: soundKey) as? Bool ?? true
-        self.isMusicEnabled = UserDefaults.standard.object(forKey: musicKey) as? Bool ?? true
-        
+        loadSettings()
         setupAudioSession()
         preloadSounds()
         preloadMusic()
@@ -88,16 +68,40 @@ class SoundManager: ObservableObject {
     
     func toggleSound() {
         isSoundEnabled.toggle()
+        saveSettings()
+        
+        if !isSoundEnabled {
+            stopMusic()
+            isMusicEnabled = false
+            saveSettings()
+        }
     }
     
     func toggleMusic() {
-        if !isSoundEnabled && !isMusicEnabled {
-            return
-        }
+        guard isSoundEnabled else { return }
+        
         isMusicEnabled.toggle()
+        saveSettings()
+        
+        if isMusicEnabled {
+            playMusic()
+        } else {
+            stopMusic()
+        }
     }
     
     // MARK: - Private Methods
+    
+    private func loadSettings() {
+        isSoundEnabled = UserDefaults.standard.object(forKey: soundKey) as? Bool ?? true
+        isMusicEnabled = UserDefaults.standard.object(forKey: musicKey) as? Bool ?? true
+    }
+    
+    private func saveSettings() {
+        UserDefaults.standard.set(isSoundEnabled, forKey: soundKey)
+        UserDefaults.standard.set(isMusicEnabled, forKey: musicKey)
+        UserDefaults.standard.synchronize()
+    }
     
     private func setupAudioSession() {
         do {
@@ -137,7 +141,7 @@ class SoundManager: ObservableObject {
     
     private func loadMusic() {
         guard let url = Bundle.main.url(forResource: "music", withExtension: "mp3") else {
-            print("Music file music.wav not found")
+            print("Music file music.mp3 not found")
             return
         }
         

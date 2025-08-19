@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 class AppStateManager: ObservableObject {
     
@@ -23,6 +24,7 @@ class AppStateManager: ObservableObject {
     // MARK: - Private Properties
     
     private let coinRewardPerLevel: Int = 100
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Initialization
     
@@ -34,10 +36,58 @@ class AppStateManager: ObservableObject {
         self.backgroundManager = BackgroundManager(dataManager: self.dataManager)
         self.dailyTaskManager = DailyTaskManager(dataManager: self.dataManager)
         
+        setupObservers()
         loadAppState()
         
         // Sync unlocked levels with achievement progress
         achievementManager.progress.unlockedLevels = unlockedLevels
+    }
+    
+    // MARK: - Private Methods
+    
+    private func setupObservers() {
+        // Forward SoundManager changes to trigger UI updates
+        soundManager.objectWillChange
+            .sink { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Forward BackgroundManager changes to trigger UI updates
+        backgroundManager.objectWillChange
+            .sink { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
+        
+        // Forward other managers changes
+        helperManager.objectWillChange
+            .sink { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
+        
+        achievementManager.objectWillChange
+            .sink { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
+        
+        dailyTaskManager.objectWillChange
+            .sink { [weak self] _ in
+                DispatchQueue.main.async {
+                    self?.objectWillChange.send()
+                }
+            }
+            .store(in: &cancellables)
     }
     
     // MARK: - Public Methods
@@ -140,8 +190,6 @@ class AppStateManager: ObservableObject {
     
     func setActiveBackground(_ backgroundType: BackgroundType) {
         backgroundManager.setActiveBackground(backgroundType)
-        // Force UI update by triggering objectWillChange
-        objectWillChange.send()
     }
     
     func canAffordBackground(_ backgroundType: BackgroundType) -> Bool {

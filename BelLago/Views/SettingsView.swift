@@ -4,7 +4,7 @@ struct SettingsView: View {
     
     // MARK: - Properties
     
-    @StateObject private var appState = AppStateManager.shared
+    @ObservedObject private var appState = AppStateManager.shared
     @Environment(\.dismiss) private var dismiss
     
     // MARK: - State
@@ -77,7 +77,7 @@ struct SettingsView: View {
                 soundSettingButton
             }
             
-            // Music Settings  
+            // Music Settings
             VStack {
                 Image(.titleMusic)
                     .resizable()
@@ -91,8 +91,9 @@ struct SettingsView: View {
     
     private var soundSettingButton: some View {
         Button {
-            appState.soundManager.playTap()
-            appState.soundManager.toggleSound()
+            withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                appState.soundManager.toggleSound()
+            }
         } label: {
             Image(.frame4)
                 .resizable()
@@ -104,16 +105,19 @@ struct SettingsView: View {
                             .resizable()
                             .scaledToFit()
                             .padding(8)
+                            .transition(.scale.combined(with: .opacity))
                     }
                 }
+                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: appState.soundManager.isSoundEnabled)
         }
     }
     
     private var musicSettingButton: some View {
         Button {
             if appState.soundManager.isSoundEnabled {
-                appState.soundManager.playTap()
-                appState.soundManager.toggleMusic()
+                withAnimation(.spring(response: 0.4, dampingFraction: 0.8)) {
+                    appState.soundManager.toggleMusic()
+                }
             }
         } label: {
             Image(.frame4)
@@ -126,11 +130,14 @@ struct SettingsView: View {
                             .resizable()
                             .scaledToFit()
                             .padding(8)
+                            .transition(.scale.combined(with: .opacity))
                     }
                 }
+                .animation(.spring(response: 0.4, dampingFraction: 0.8), value: appState.soundManager.isMusicEnabled)
         }
         .disabled(!appState.soundManager.isSoundEnabled)
         .opacity(appState.soundManager.isSoundEnabled ? 1.0 : 0.7)
+        .animation(.easeInOut(duration: 0.3), value: appState.soundManager.isSoundEnabled)
     }
 }
 
