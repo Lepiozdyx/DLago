@@ -47,6 +47,7 @@ struct MainMenuView: View {
             if appState.soundManager.isMusicEnabled {
                 appState.soundManager.playMusic()
             }
+            OrientationManager.shared.lockLandscape()
         }
         .onChange(of: scenePhase) { phase in
             switch phase {
@@ -54,6 +55,7 @@ struct MainMenuView: View {
                 if appState.soundManager.isMusicEnabled {
                     appState.soundManager.playMusic()
                 }
+                OrientationManager.shared.lockLandscape()
             case .background, .inactive:
                 appState.soundManager.stopMusic()
             @unknown default:

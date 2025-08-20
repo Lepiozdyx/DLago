@@ -23,6 +23,7 @@ struct LoadingView: View {
             VStack {
                 Spacer()
                 
+            
                 Image(.logotype)
                     .resizable()
                     .scaledToFit()
