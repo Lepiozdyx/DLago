@@ -1,14 +1,30 @@
 import SwiftUI
 
 struct ContentView: View {
+    
+    @StateObject private var state = AppStateViewModel()
+        
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        Group {
+            switch state.appState {
+            case .fetch:
+                LoadingView()
+                
+            case .download:
+                if let url = state.networkManager.targetURL {
+                    WKWebViewManager(url: url, webManager: state.networkManager)
+                    
+                } else {
+                    WKWebViewManager(url: NetworkManager.initialURL, webManager: state.networkManager)
+                }
+                
+            case .loading:
+                MainMenuView()
+            }
         }
-        .padding()
+        .onAppear {
+            state.stateCheck()
+        }
     }
 }
 

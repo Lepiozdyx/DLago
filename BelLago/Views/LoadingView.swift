@@ -17,7 +17,7 @@ struct LoadingView: View {
             Image(.logotype)
                 .resizable()
                 .scaledToFit()
-                .opacity(0.3)
+                .opacity(0.2)
                 .padding()
             
             VStack {

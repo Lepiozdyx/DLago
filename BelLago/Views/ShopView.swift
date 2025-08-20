@@ -51,6 +51,7 @@ struct ShopView: View {
                         .scaledToFit()
                         .frame(height: 50)
                 }
+                .playTap()
                 
                 Spacer()
                 
