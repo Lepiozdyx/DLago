@@ -20,6 +20,7 @@ struct ContentView: View {
                 
             case .loading:
                 MainMenuView()
+                    .preferredColorScheme(.light)
             }
         }
         .onAppear {
