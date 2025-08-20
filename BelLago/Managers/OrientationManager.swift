@@ -12,7 +12,7 @@ class OrientationManager {
         } else {
             OrientationHelper.isAutoRotationEnabled = true
         }
-        UIViewController.attemptRotationToDeviceOrientation()
+        requestOrientationUpdate()
     }
     
     func lockLandscape() {
@@ -22,13 +22,9 @@ class OrientationManager {
         if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
             if windowScene.interfaceOrientation.isPortrait {
                 OrientationHelper.isAutoRotationEnabled = true
-                UIViewController.attemptRotationToDeviceOrientation()
+                requestOrientationUpdate()
                 
-                if #available(iOS 16.0, *) {
-                    windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeRight))
-                } else {
-                    UIDevice.current.setValue(UIDeviceOrientation.landscapeRight.rawValue, forKey: "orientation")
-                }
+                windowScene.requestGeometryUpdate(.iOS(interfaceOrientations: .landscapeRight))
                 
                 OrientationHelper.isAutoRotationEnabled = false
             }
@@ -38,7 +34,40 @@ class OrientationManager {
     func unlockOrientation() {
         OrientationHelper.orientationMask = .all
         OrientationHelper.isAutoRotationEnabled = true
-        UIViewController.attemptRotationToDeviceOrientation()
+        requestOrientationUpdate()
+    }
+    
+    // MARK: - Private Methods
+    
+    private func requestOrientationUpdate() {
+        if let viewController = getCurrentViewController() {
+            viewController.setNeedsUpdateOfSupportedInterfaceOrientations()
+        }
+    }
+    
+    private func getCurrentViewController() -> UIViewController? {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first(where: { $0.isKeyWindow }) else {
+            return nil
+        }
+        
+        return findTopViewController(from: window.rootViewController)
+    }
+    
+    private func findTopViewController(from viewController: UIViewController?) -> UIViewController? {
+        if let presentedViewController = viewController?.presentedViewController {
+            return findTopViewController(from: presentedViewController)
+        }
+        
+        if let navigationController = viewController as? UINavigationController {
+            return findTopViewController(from: navigationController.visibleViewController)
+        }
+        
+        if let tabBarController = viewController as? UITabBarController {
+            return findTopViewController(from: tabBarController.selectedViewController)
+        }
+        
+        return viewController
     }
 }
 
