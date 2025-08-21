@@ -6,7 +6,7 @@ class NetworkManager: ObservableObject {
     
     @Published private(set) var targetURL: URL?
     
-    static let initialURL = URL(string: "https://")!
+    static let initialURL = URL(string: "https://dellagox.top/get")!
     
     private let storage: UserDefaults
     private var didSaveURL = false
